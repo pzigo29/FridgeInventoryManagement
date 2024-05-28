@@ -1,0 +1,61 @@
+﻿<Window x:Class="WPF.FridgeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPF"
+        xmlns:fridgeInventory="clr-namespace:FridgeInventory;assembly=FridgeInventory"
+        mc:Ignorable="d"
+        Title="Fridges" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Menu>
+            <MenuItem Header="Add">
+                <MenuItem Name="AddItem" Header="Add Item" Click="AddItem_OnClick"/>
+                <MenuItem Name="AddFridgeMenuItem" Header="Add Fridge" Click="AddFridge_OnClick_OnClick"/>
+            </MenuItem>
+            <MenuItem Header="Modify">
+                <MenuItem Name="ModifyItem" Header="Modify Item" Click="ModifyItem_OnClick"/>
+                <MenuItem Name="ModifyFridgeMenuItem" Header="Modify Fridge" Click="ModifyFridges_OnClick"/>
+            </MenuItem>
+            <MenuItem Header="Delete">
+                <MenuItem Name="DeleteItem" Header="Delete" Click="DeleteItem_OnClick"/>
+                <MenuItem Name="DeleteFridgeMenuItem" Header="Delete Fridge" Click="DeleteFridge_OnClick"/>
+            </MenuItem>
+            <MenuItem Header="Profile" Click="Profile_OnClick"/>
+        </Menu>
+        <ItemsControl Grid.Row="1" Name="FridgesControl">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Expander Header="{Binding Name}">
+                        <ListView ItemsSource="{Binding ItemsList}" SelectionMode="Extended" SelectionChanged="ListView_SelectionChanged">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Name}">
+                                        <GridViewColumn.Header>
+                                            <GridViewColumnHeader Content="Name" Click="GridViewColumnHeader_Click" Tag="Name"/>
+                                        </GridViewColumn.Header>
+                                    </GridViewColumn>
+                                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Quantity}">
+                                        <GridViewColumn.Header>
+                                            <GridViewColumnHeader Content="Quantity" Click="GridViewColumnHeader_Click" Tag="Quantity"/>
+                                        </GridViewColumn.Header>
+                                    </GridViewColumn>
+                                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding ExpiryDate, StringFormat=d}">
+                                        <GridViewColumn.Header>
+                                            <GridViewColumnHeader Content="Expiration" Click="GridViewColumnHeader_Click" Tag="ExpiryDate"/>
+                                        </GridViewColumn.Header>
+                                    </GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </Expander>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+    </Grid>
+</Window>

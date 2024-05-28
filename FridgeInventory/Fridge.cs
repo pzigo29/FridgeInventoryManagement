@@ -1,38 +1,64 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace FridgeInventory
 {
-    public class Fridge(Person? owner, FridgeInventory? items = null)
+    public class Fridge
     {
-        public Person? Owner { get; set; } = owner;
-        public FridgeInventory Items { get; init; } = items ?? new FridgeInventory();
-
-        public void SaveToJson()
+        [Key]
+        public int? Id { get; set; }
+        [NotMapped]
+        public Person? Owner { get; set; }
+        [ForeignKey("OwnerId")]
+        public int? OwnerId { get; set; }
+        [NotMapped]
+        public virtual ICollection<FridgeItem>? ItemsList { get; set; } = [];
+        public string Name { get; set; }
+        public Fridge(int? ownerId, string name,int? id = null)
         {
-            var json = JsonSerializer.Serialize(this);
-            File.WriteAllText("fridge.json", json);
+            Id = id;
+            OwnerId = ownerId;
+            Owner = null;
+            Name = name;
         }
 
-        public static Fridge? LoadFromJson(string path)
+        public Fridge(string name, int? ownerId = null)
         {
-            var json = File.ReadAllText(path);
-            return JsonSerializer.Deserialize<Fridge>(json);
+            OwnerId = ownerId;
+            Owner = null;
+            Name = name;
         }
+        //public Fridge(Person? owner, FridgeInventory items)
+        //{
+        //    OwnerId = owner?.Id;
+        //    Items = items;
+        //    FridgeInventoryId = Items.Id;
+        //    Owner = owner;
+        //}
 
         public void AddItem(FridgeItem item)
         {
-            Items.Add(item);
+            //Items.Add(item);
+            ItemsList?.Add(item);
+            using var db = new FridgeContext();
+            item.FridgeId = Id;
+            db.FridgeItem.Add(item);
+            db.SaveChanges();
         }
 
         public void RemoveItem(FridgeItem item)
         {
-            Items.Remove(item);
+            //Items.Remove(item);
         }
 
-        public override string ToString()
-        {
-            return $"Owner: {Owner}, Items: {Items}";
-        }
+        //public override string ToString()
+        //{
+        //    //return $"Owner: {Owner}, Items: {Items}";
+        //}
     }
+
+    
 }

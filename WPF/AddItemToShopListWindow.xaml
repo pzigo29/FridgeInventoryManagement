@@ -1,0 +1,49 @@
+﻿<Window x:Class="WPF.AddItemToShopListWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPF"
+        xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+        xmlns:fridgeInventory="clr-namespace:FridgeInventory;assembly=FridgeInventory"
+        mc:Ignorable="d"
+        Title="Add Item" Height="300" Width="400">
+    <!-- Vygenerované AI -->
+    <Window.Resources>
+        <ObjectDataProvider x:Key="FridgeItemTypeProvider" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="fridgeInventory:FridgeItemType" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Window.Resources>
+    <!-- Vygenerované AI -->
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Name:" HorizontalAlignment="Center" Margin="5"/>
+        <TextBlock Grid.Row="1" Text="Quantity:" HorizontalAlignment="Center" Margin="5"/>
+        <TextBlock Grid.Row="2" Text="Expiry Date:" HorizontalAlignment="Center" Margin="5"/>
+        <TextBlock Grid.Row="3" Text="Type:" HorizontalAlignment="Center" Margin="5"/>
+        <TextBlock Grid.Row="4" Text="Add to shopping list:" HorizontalAlignment="Center" Margin="5"/>
+        <TextBox Grid.Row="0" Grid.Column="1" MinWidth="50" Margin="5" x:Name="ItemName"/>
+        <TextBox Grid.Row="1" Grid.Column="1" MinWidth="50" Margin="5" x:Name="Quantity"/>
+        <DatePicker Grid.Row="2" Grid.Column="1" MinWidth="50" Margin="5" x:Name="ExpiryDate"/>
+        <ComboBox Grid.Row="3" Grid.Column="1" MinWidth="50" Margin="5" x:Name="Type" ItemsSource="{Binding Source={StaticResource FridgeItemTypeProvider}}" />
+        <CheckBox Grid.Row="4" Grid.Column="1" MinWidth="50" Margin="5" x:Name="ShopList"/>
+
+        <Button Grid.Row="5" Grid.Column="1" Content="Cancel" Margin="15" Click="Cancel_Click"/>
+        <Button Grid.Row="5" Grid.Column="2" Content="Add" Margin="15" Click="Add_Click"/>
+    </Grid>
+</Window>

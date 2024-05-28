@@ -1,0 +1,24 @@
+﻿<Window x:Class="WPF.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPF"
+        xmlns:fridgeInventory="clr-namespace:FridgeInventory;assembly=FridgeInventory"
+        mc:Ignorable="d"
+        Title="Settings" Height="450" Width="800">
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!--<TextBox Text="Automatic addition of items to the shopping list"/>-->
+        <CheckBox Grid.Row="0" Grid.Column="0" Name="AutomaticShopingList" Content="Automatic addition of items to the shopping list" FlowDirection="RightToLeft" HorizontalAlignment="Left" Click="AutomaticShopingList_OnClick"/>
+        <ListBox Grid.Row="1" Grid.Column="0" x:Name="EnumListBox"/>
+    </Grid>
+</Window>

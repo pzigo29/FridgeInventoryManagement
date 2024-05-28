@@ -5,8 +5,42 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Fridge Inventory Management" Height="200" Width="300">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <!--<Menu>
+            <MenuItem Header="Shopping List" Click="MenuItem_OnClick"/>
+            <MenuItem Header="Settings" Click="Settings_OnClick"/>
+        </Menu>-->
+
+        <Grid Grid.Row="1" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock  Text="Login" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+
+            <TextBlock Margin="5, 0" Grid.Row="1" Grid.Column="0" Text="Username:" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+            <TextBox Margin="5, 2" x:Name="UsernameBox" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom" MinWidth="60"/>
+            <TextBlock Margin="5, 0" Grid.Row="2" Grid.Column="0" Text="Password:" HorizontalAlignment="Right"/>
+            <PasswordBox Margin="5, 2" Grid.Row="2" Grid.Column="1" x:Name="PasswordBox" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="60"/>
+            <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="Register now!" MaxWidth="100" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10" Click="Register_OnClick"/>
+                <Button Grid.Column="1" Content="Login" MaxWidth="100" HorizontalAlignment="Left" VerticalAlignment="Top" Height="Auto" Margin="15, 10" IsDefault="True" Click="Login_OnClick"/>
+            </Grid>
+        </Grid>
     </Grid>
 </Window>

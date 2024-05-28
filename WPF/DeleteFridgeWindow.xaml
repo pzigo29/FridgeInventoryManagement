@@ -1,0 +1,22 @@
+﻿<Window x:Class="WPF.DeleteFridgeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPF"
+        mc:Ignorable="d"
+        Title="Delete Fridge" Height="150" Width="300">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Margin="5" Text="Fridge: " HorizontalAlignment="Center"/>
+        <ComboBox Grid.Column="1" Margin="5" x:Name="FridgeBox" ItemsSource="{Binding Fridges}" DisplayMemberPath="Name"/>
+        <Button Grid.Row="1" Grid.Column="1" Content="Delete" Margin="5" Click="Delete_OnClick"/>
+    </Grid>
+</Window>
