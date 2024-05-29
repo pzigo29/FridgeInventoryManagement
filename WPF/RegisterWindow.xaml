@@ -76,7 +76,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="1" Content="Register" MaxWidth="100" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10" Click="Register_OnClick"/>
+                <Button Grid.Column="1" Content="Register" MaxWidth="100" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10" IsDefault="True" Click="Register_OnClick"/>
             </Grid>
         </Grid>
     </Grid>

@@ -1,18 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using FridgeInventory;
-using Microsoft.EntityFrameworkCore;
 
 namespace WPF
 {
@@ -24,23 +12,19 @@ namespace WPF
         
         public bool IsSortedAscending { get; set; }
         public List<Fridge> Fridges { get; set; }
-        public int OwnerId { get; set; }
+        public int OwnerId { get; }
         public List<FridgeItem>? SelectedItems { get; set; }
         public FridgeWindow(int ownerId)
         {
             InitializeComponent();
             OwnerId = ownerId;
             IsSortedAscending = false;
+            Fridges = [];
             RefreshFridges();
+            AddItem.IsEnabled = Fridges.Count > 0;
             ModifyItem.IsEnabled = false;
             DeleteItem.IsEnabled = false;
-            Fridges = new List<Fridge>();
-        }
-
-
-        private void FridgeListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            throw new NotImplementedException();
+            
         }
 
         private void GridViewColumnHeader_Click(object sender, RoutedEventArgs e)
@@ -73,13 +57,18 @@ namespace WPF
             //    FridgesControl.ItemsSource = Fridges;
             //}
         }
-
+        private void Settings_OnClick(object sender, RoutedEventArgs e)
+        {
+            var settings = new SettingsWindow();
+            settings.Show();
+        }
 
         private void AddItem_OnClick(object sender, RoutedEventArgs e)
         {
             var addItemWindow = new AddItemToFridgeWindow();
             addItemWindow.ItemAdded += AddItemWindow_ItemAdded;
             addItemWindow.InitFridges(OwnerId);
+            addItemWindow.ShopList.IsChecked = false;
             addItemWindow.ShowDialog();
         }
 
@@ -91,22 +80,16 @@ namespace WPF
         private void RefreshFridges()
         {
             using var db = new FridgeContext();
-            Fridges = db.Fridge
-                .Where(i => i.OwnerId == OwnerId)
-                .ToList();
-            //if (Fridges.Count == 0)
-            //{
-            //    MessageBox.Show("You do not have a fridge yet");
-            //    AddFridge(db);
-            //}
+            Fridges = [.. db.Fridge.Where(i => i.OwnerId == OwnerId)];
             UpdateFridges(db);
+            AddItem.IsEnabled = Fridges.Count > 0;
         }
 
         private void UpdateFridges(FridgeContext db)
         {
             foreach (var fridge in Fridges)
             {
-                fridge.ItemsList = db.FridgeItem.Where(i => i.FridgeId == fridge.Id)?.ToList();
+                fridge.ItemsList = [.. db.FridgeItem.Where(i => i.FridgeId == fridge.Id && i.InShoppingList != true )];
             }
 
             FridgesControl.ItemsSource = Fridges;
@@ -116,9 +99,8 @@ namespace WPF
         {
             var addFridgeWindow = new AddFridgeWindow(OwnerId);
             addFridgeWindow.ShowDialog();
-            Fridges = db.Fridge
-                .Where(i => i.OwnerId == OwnerId)
-                .ToList();
+            Fridges = [.. db.Fridge.Where(i => i.OwnerId == OwnerId)];
+            AddItem.IsEnabled = Fridges.Count > 0;
         }
 
         private void ModifyItem_OnClick(object sender, RoutedEventArgs e)
@@ -129,7 +111,15 @@ namespace WPF
                 return;
             }
             var item = SelectedItems.First();
-            var window = new AddItemToFridgeWindow(item);
+            var window = new AddItemToFridgeWindow(item)
+            {
+                Title = "Modify Item",
+                AddButton =
+                {
+                    Content = "Modify",
+                    IsDefault = true
+                }
+            };
             window.ItemAdded += AddItemWindow_ItemAdded;
             window.InitFridges(OwnerId);
             window.Show();
@@ -145,7 +135,7 @@ namespace WPF
             if (SelectedItems == null) return;
             foreach (var selectedItem in SelectedItems)
             {
-                db.FridgeItem.Remove(selectedItem);
+                FridgeContext.RemoveItem(selectedItem.Id);
             }
             db.SaveChanges();
             RefreshFridges();
@@ -170,31 +160,34 @@ namespace WPF
         private void ModifyFridges_OnClick(object sender, RoutedEventArgs e)
         {
             var modifyFridgeWindow = new ModifyFridgeWindow(OwnerId);
-            modifyFridgeWindow.FridgeModified += ModifyFridgeWindow_FridgeModified;
+            modifyFridgeWindow.FridgeModified += (_, _) => RefreshFridges();
             modifyFridgeWindow.ShowDialog();
-        }
-
-        private void ModifyFridgeWindow_FridgeModified(object sender, EventArgs e)
-        {
-            RefreshFridges();
         }
 
         private void DeleteFridge_OnClick(object sender, RoutedEventArgs e)
         {
             var deleteFridgeWindow = new DeleteFridgeWindow(OwnerId);
-            deleteFridgeWindow.FridgeModified += DeleteFridgeWindow_FridgeModified;
+            deleteFridgeWindow.FridgeModified += (_, _) => RefreshFridges();
             deleteFridgeWindow.ShowDialog();
-        }
-
-        private void DeleteFridgeWindow_FridgeModified(object sender, EventArgs e)
-        {
-            RefreshFridges();
         }
 
         private void Profile_OnClick(object sender, RoutedEventArgs e)
         {
             var profileWindow = new ProfileWindow(OwnerId);
+            profileWindow.ProfileDeleted += (_, _) => Close();
             profileWindow.ShowDialog();
+        }
+
+        private void ShoppingList_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (Fridges.Count == 0)
+            {
+                MessageBox.Show("You have no fridges to shop for");
+                return;
+            }
+            var shoppingListWindow = new ShoppingListWindow(OwnerId);
+            shoppingListWindow.ItemBought += (_, _) => RefreshFridges();
+            shoppingListWindow.ShowDialog();
         }
     }
 }

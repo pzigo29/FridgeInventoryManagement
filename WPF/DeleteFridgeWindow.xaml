@@ -17,6 +17,6 @@
         </Grid.ColumnDefinitions>
         <TextBlock Margin="5" Text="Fridge: " HorizontalAlignment="Center"/>
         <ComboBox Grid.Column="1" Margin="5" x:Name="FridgeBox" ItemsSource="{Binding Fridges}" DisplayMemberPath="Name"/>
-        <Button Grid.Row="1" Grid.Column="1" Content="Delete" Margin="5" Click="Delete_OnClick"/>
+        <Button Grid.Row="1" Grid.Column="1" Content="Delete" Margin="5" IsDefault="True" Click="Delete_OnClick"/>
     </Grid>
 </Window>

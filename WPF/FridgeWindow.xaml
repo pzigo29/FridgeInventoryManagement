@@ -25,13 +25,14 @@
                 <MenuItem Name="DeleteItem" Header="Delete" Click="DeleteItem_OnClick"/>
                 <MenuItem Name="DeleteFridgeMenuItem" Header="Delete Fridge" Click="DeleteFridge_OnClick"/>
             </MenuItem>
+            <MenuItem Header="Shopping List" Click="ShoppingList_OnClick"/>
             <MenuItem Header="Profile" Click="Profile_OnClick"/>
         </Menu>
         <ItemsControl Grid.Row="1" Name="FridgesControl">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Expander Header="{Binding Name}">
-                        <ListView ItemsSource="{Binding ItemsList}" SelectionMode="Extended" SelectionChanged="ListView_SelectionChanged">
+                        <ListView ItemsSource="{Binding ItemsList}" SelectionMode="Extended" SelectionChanged="ListView_SelectionChanged" MouseDoubleClick="ModifyItem_OnClick">
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Name}">

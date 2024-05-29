@@ -20,6 +20,6 @@
         <ComboBox Grid.Column="1" Margin="5" x:Name="FridgeBox" ItemsSource="{Binding Fridges}" DisplayMemberPath="Name"/>
         <TextBlock Grid.Row="1" Margin="5" Text="Name of the fridge: " HorizontalAlignment="Center"/>
         <TextBox Grid.Row="1" Grid.Column="1" Margin="5" x:Name="NameTextBox"/>
-        <Button Grid.Row="2" Grid.Column="1" Content="Rename" Margin="5" Click="Modify_OnClick"/>
+        <Button Grid.Row="2" Grid.Column="1" Content="Rename" Margin="5" IsDefault="True" Click="Modify_OnClick"/>
     </Grid>
 </Window>

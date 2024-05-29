@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace FridgeInventory
 {
@@ -17,7 +12,8 @@ namespace FridgeInventory
         int age,
         string? address = null,
         string? phoneNumber = null,
-        string? email = null)
+        string? email = null,
+        bool? admin = null)
     {
         [Key]
         public int Id { get; set; } = id;
@@ -31,6 +27,7 @@ namespace FridgeInventory
         public string Username { get; set; } = username;
         public string PasswordHash { get; set; } = passwordHash;
         public string Seed { get; set; } = seed;
+        public bool? Admin { get; set; } = admin;
 
         public override string ToString()
         {

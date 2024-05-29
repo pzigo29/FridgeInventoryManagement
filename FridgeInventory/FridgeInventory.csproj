@@ -11,4 +11,13 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="FridgeDatabaseLocal.mdf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="FridgeDatabaseLocal_log.ldf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

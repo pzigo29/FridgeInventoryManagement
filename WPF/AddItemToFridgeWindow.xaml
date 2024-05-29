@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:WPF"
         xmlns:fridgeInventory="clr-namespace:FridgeInventory;assembly=FridgeInventory"
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="Add Item To Fridge" Height="300" Width="400">
     <!-- Vygenerované AI -->
@@ -38,15 +39,14 @@
         <TextBlock Grid.Row="2" Text="Quantity:" HorizontalAlignment="Center" Margin="5"/>
         <TextBlock Grid.Row="3" Text="Expiry Date:" HorizontalAlignment="Center" Margin="5"/>
         <TextBlock Grid.Row="4" Text="Type:" HorizontalAlignment="Center" Margin="5"/>
-        <TextBlock Grid.Row="5" Text="Add to shopping list:" HorizontalAlignment="Center" Margin="5"/>
         <ComboBox Grid.Row="0" Grid.Column="1" Margin="5" x:Name="Fridge" ItemsSource="{Binding Fridges}" DisplayMemberPath="Name"/>
         <TextBox Grid.Row="1" Grid.Column="1" MinWidth="50" Margin="5" x:Name="ItemName"/>
-        <TextBox Grid.Row="2" Grid.Column="1" MinWidth="50" Margin="5" x:Name="Quantity"/>
+        <xctk:IntegerUpDown Grid.Row="2" Grid.Column="1" Value="1" Increment="1" Minimum="1" MinWidth="50" Margin="5" x:Name="Quantity"/>
         <DatePicker Grid.Row="3" Grid.Column="1" MinWidth="50" Margin="5" x:Name="ExpiryDate"/>
         <ComboBox Grid.Row="4" Grid.Column="1" MinWidth="50" Margin="5" x:Name="Type" ItemsSource="{Binding Source={StaticResource FridgeItemTypeProvider}}" />
-        <CheckBox Grid.Row="5" Grid.Column="1" MinWidth="50" Margin="5" x:Name="ShopList"/>
+        <CheckBox Grid.Row="5" Grid.Column="1" MinWidth="50" Margin="5" x:Name="ShopList" Visibility="Collapsed"/>
 
         <Button Grid.Row="6" Grid.Column="1" Content="Cancel" Margin="15" Click="Cancel_Click"/>
-        <Button Grid.Row="6" Grid.Column="2" Content="Add" Margin="15" Click="Add_Click"/>
+        <Button Grid.Row="6" Grid.Column="2" x:Name="AddButton" Content="Add" Margin="15" IsDefault="True" Click="Add_Click"/>
     </Grid>
 </Window>

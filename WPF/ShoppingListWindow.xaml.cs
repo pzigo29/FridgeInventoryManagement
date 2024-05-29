@@ -1,18 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using FridgeInventory;
-using Microsoft.EntityFrameworkCore;
 
 namespace WPF
 {
@@ -21,48 +9,41 @@ namespace WPF
     /// </summary>
     public partial class ShoppingListWindow : Window
     {
-        private bool IsSortedAscending { get; set; }
-        private AddItemToShopListWindow? AddItemWindow { get; set; }
+        public delegate void ItemBoughtEventHandler(object sender, EventArgs e);
+        public event ItemBoughtEventHandler? ItemBought;
+
+        private AddItemToFridgeWindow? AddItemWindow { get; set; }
+        private int? OwnerId { get; }
+        private List<Fridge> Fridges { get; set; }
+        private List<FridgeItem>? SelectedItems { get; set; }
         public ShoppingListWindow()
         {
             InitializeComponent();
-            RefreshShoppingListView();
-            IsSortedAscending = false;
+            Fridges = [];
             Modify.IsEnabled = false;
+            Delete.IsEnabled = false;
             Closed += ShoppingListWindow_Closed;
         }
 
-        private void ShoppingListWindow_Closed(object? sender, System.EventArgs e)
+        public ShoppingListWindow(int? ownerId) : this()
+        {
+            OwnerId = ownerId;
+            RefreshShoppingListView();
+
+        }
+
+        private void ShoppingListWindow_Closed(object? sender, EventArgs e)
         {
             AddItemWindow?.Close();
         }
 
-        private void GridViewColumnHeader_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is not GridViewColumnHeader columnHeader) return;
-            var sortPropertyName = columnHeader.Tag.ToString();
-            if (sortPropertyName == null) return;
-            using var db = new FridgeContext();
-            var items = db.FridgeItem.Where(i => i.InShoppingList == true).ToList();
-
-            if (IsSortedAscending)
-            {
-                IsSortedAscending = false;
-                items = items.OrderByDescending(item => item.GetType().GetProperty(sortPropertyName)?.GetValue(item))?.ToList();
-                ShoppingListView.ItemsSource = items;
-            }
-            else
-            {
-                IsSortedAscending = true;
-                items = items.OrderBy(item => item.GetType().GetProperty(sortPropertyName)?.GetValue(item))?.ToList();
-                ShoppingListView.ItemsSource = items;
-            }
-        }
-
         private void AddItem_OnClick(object sender, RoutedEventArgs e)
         {
-            AddItemWindow = new AddItemToShopListWindow();
+            AddItemWindow = new AddItemToFridgeWindow();
             AddItemWindow.ItemAdded += AddItemWindow_ItemAdded;
+            AddItemWindow.InitFridges(OwnerId);
+            AddItemWindow.ShopList.IsChecked = true;
+            AddItemWindow.ShopList.Visibility = Visibility.Collapsed;
             AddItemWindow.Show();
         }
 
@@ -74,17 +55,40 @@ namespace WPF
         private void RefreshShoppingListView()
         {
             using var db = new FridgeContext();
-            var shoppingList = db.FridgeItem.Where(i => i.InShoppingList == true).ToList();
-            ShoppingListView.ItemsSource = shoppingList;
+            Fridges = [.. db.Fridge.Where(i => i.OwnerId == OwnerId)];
+            UpdateFridges(db);
+        }
+
+        private void UpdateFridges(FridgeContext db)
+        {
+            foreach (var fridge in Fridges)
+            {
+                fridge.ItemsList = [.. db.FridgeItem.Where(i => i.FridgeId == fridge.Id && i.InShoppingList == true)];
+            }
+            ShoppingListView.ItemsSource = Fridges;
         }
 
         private void ModifyItem_OnClick(object sender, RoutedEventArgs e)
         {
-            var item = (FridgeItem)ShoppingListView.SelectedItem;
-            AddItemWindow = new AddItemToShopListWindow(item);
+            if (SelectedItems?.Count != 1)
+            {
+                MessageBox.Show("Please select one item to modify");
+                return;
+            }
+            var item = SelectedItems.First();
+            AddItemWindow = new(item)
+            {
+                Title = "Modify Item",
+                AddButton =
+                {
+                    Content = "Modify",
+                    IsDefault = true
+                }
+            };
+            AddItemWindow.InitFridges(OwnerId);
             AddItemWindow.ItemAdded += AddItemWindow_ItemAdded;
-            
-            
+            AddItemWindow.ShopList.IsChecked = true;
+            AddItemWindow.ShopList.Visibility = Visibility.Collapsed;
             AddItemWindow.Show();
         }
 
@@ -93,9 +97,10 @@ namespace WPF
             var result = MessageBox.Show("Are you sure you want to delete the selected item(s)?", "Delete Item", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result != MessageBoxResult.Yes) return;
             using var db = new FridgeContext();
-            foreach (FridgeItem item in ShoppingListView.SelectedItems)
+            if (SelectedItems == null) return;
+            foreach (FridgeItem item in SelectedItems)
             {
-                db.FridgeItem.Remove(item);
+                FridgeContext.RemoveItem(item.Id);
             }
             db.SaveChanges();
             RefreshShoppingListView();
@@ -105,6 +110,20 @@ namespace WPF
         {
             if (sender is not ListView listView) return;
             Modify.IsEnabled = listView.SelectedItems.Count == 1;
+            Delete.IsEnabled = listView.SelectedItems.Count > 0;
+            SelectedItems = listView.SelectedItems.Cast<FridgeItem>().ToList();
+        }
+
+        private void Bought_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is not CheckBox bought) return;
+            if (bought.DataContext is not FridgeItem item) return;
+            item.InShoppingList = !bought.IsChecked;
+            using var db = new FridgeContext();
+            db.FridgeItem.Update(item);
+            db.SaveChanges();
+            RefreshShoppingListView();
+            ItemBought?.Invoke(this, EventArgs.Empty);
         }
     }
 }

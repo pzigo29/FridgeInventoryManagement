@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using FridgeInventory;
 
 namespace WPF
@@ -47,11 +35,8 @@ namespace WPF
             DataContext = this;
         }
 
-        public AddItemToFridgeWindow(FridgeItem item)
+        public AddItemToFridgeWindow(FridgeItem item) : this()
         {
-            InitializeComponent();
-            Fridges = [];
-            DataContext = this;
             Item = item;
             ItemName.Text = item.Name;
             Quantity.Text = item.Quantity.ToString();
@@ -64,9 +49,7 @@ namespace WPF
         {
             OwnerId = ownerId;
             using var db = new FridgeContext();
-            Fridges = db.Fridge
-                .Where(i => i.OwnerId == OwnerId)
-                .ToList();
+            Fridges = [.. db.Fridge.Where(i => i.OwnerId == OwnerId)];
             DataContext = this;
             Fridge.SelectedItem = Fridges.FirstOrDefault(f => f.Id == Item?.FridgeId);
         }
@@ -97,14 +80,24 @@ namespace WPF
                     item.Type = (FridgeItemType)Type.SelectedItem;
                     item.ExpiryDate = ExpiryDate.SelectedDate;
                     item.InShoppingList = ShopList.IsChecked;
+                    item.FridgeId = fridge.Id;
                 }
                 db.SaveChanges();
             }
             else
             {
-                var item = new FridgeItem(null, ItemName.Text, int.Parse(Quantity.Text), ExpiryDate.SelectedDate, (FridgeItemType)Type.SelectedItem, ShopList.IsChecked);
-                fridge.AddItem(item);
-                selectedFridge?.ItemsList?.Add(item);
+                try
+                {
+                    Type.SelectedItem ??= FridgeItemType.Other;
+                    var item = new FridgeItem(null, ItemName.Text, int.Parse(Quantity.Text), ExpiryDate.SelectedDate, (FridgeItemType)Type.SelectedItem, ShopList.IsChecked);
+                    fridge.AddItem(item);
+                    selectedFridge?.ItemsList?.Add(item);
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message);
+                    return;
+                }
             }
             ItemAdded?.Invoke(this, EventArgs.Empty);
             Close();

@@ -1,8 +1,5 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json;
-using Microsoft.EntityFrameworkCore;
 
 namespace FridgeInventory
 {
@@ -31,33 +28,15 @@ namespace FridgeInventory
             Owner = null;
             Name = name;
         }
-        //public Fridge(Person? owner, FridgeInventory items)
-        //{
-        //    OwnerId = owner?.Id;
-        //    Items = items;
-        //    FridgeInventoryId = Items.Id;
-        //    Owner = owner;
-        //}
 
         public void AddItem(FridgeItem item)
         {
-            //Items.Add(item);
             ItemsList?.Add(item);
             using var db = new FridgeContext();
             item.FridgeId = Id;
             db.FridgeItem.Add(item);
             db.SaveChanges();
         }
-
-        public void RemoveItem(FridgeItem item)
-        {
-            //Items.Remove(item);
-        }
-
-        //public override string ToString()
-        //{
-        //    //return $"Owner: {Owner}, Items: {Items}";
-        //}
     }
 
     

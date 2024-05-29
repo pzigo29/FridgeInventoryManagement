@@ -9,5 +9,4 @@ public enum FridgeItemType
     Beverage,
     Snack,
     Other
-
 }

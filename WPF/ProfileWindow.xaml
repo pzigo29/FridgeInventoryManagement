@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPF"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="Profile" Height="350" Width="300">
     <Window.Resources>
@@ -12,6 +13,10 @@
             <Setter Property="HorizontalAlignment" Value="Right"/>
         </Style>
         <Style TargetType="TextBox">
+            <Setter Property="MinWidth" Value="100"/>
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+        <Style TargetType="xctk:IntegerUpDown">
             <Setter Property="MinWidth" Value="100"/>
             <Setter Property="Margin" Value="5"/>
         </Style>
@@ -31,7 +36,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -47,11 +52,11 @@
         <!--<TextBlock Grid.Row="6" Text="Username:"/>-->
         <TextBox x:Name="FirstNameBox" Grid.Row="0" Grid.Column="1" Text="{Binding Person.FirstName}"/>
         <TextBox x:Name="LastNameBox" Grid.Row="1" Grid.Column="1" Text="{Binding Person.LastName}"/>
-        <TextBox x:Name="AgeBox" Grid.Row="2" Grid.Column="1" Text="{Binding Person.Age}"/>
+        <xctk:IntegerUpDown x:Name="AgeBox" Grid.Row="2" Grid.Column="1" Minimum="0" Text="{Binding Person.Age}"/>
         <TextBox x:Name="AddressBox" Grid.Row="3" Grid.Column="1" Text="{Binding Person.Address}"/>
         <TextBox x:Name="PhoneNumberBox" Grid.Row="4" Grid.Column="1" Text="{Binding Person.PhoneNumber}"/>
         <TextBox x:Name="EmailBox" Grid.Row="5" Grid.Column="1" Text="{Binding Person.Email}"/>
-        <!--<TextBox x:Name="UsernameBox" Grid.Row="6" Grid.Column="1" Text="{Binding Person.Username}"/>-->
-        <Button Grid.Row="7" Grid.Column="1" Content="Save" Click="SaveButton_Click"/>
+        <Button Grid.Row="7" Grid.Column="1" Content="Save" IsDefault="True" Click="SaveButton_Click"/>
+        <Button Grid.Row="8" Grid.Column="1" Content="Delete Profile" Click="DeleteButton_Click" BorderBrush="Red" FontStyle="Italic"/>
     </Grid>
 </Window>

@@ -1,17 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Windows;
 using FridgeInventory;
 
 namespace WPF
@@ -21,17 +8,48 @@ namespace WPF
     /// </summary>
     public partial class RegisterWindow : Window
     {
+        public delegate void RegisterWindowDelegate();
+        public event RegisterWindowDelegate? UserAdded;
+        public Person? Person { get; set; }
         public RegisterWindow()
         {
             InitializeComponent();
         }
 
+        public RegisterWindow(int ownerId)
+        {
+            InitializeComponent();
+            using var db = new FridgeContext();
+            Person = db.Person.Find(ownerId);
+            if (Person == null) return;
+            UsernameBox.Text = Person.Username;
+            FirstNameBox.Text = Person.FirstName;
+            LastNameBox.Text = Person.LastName;
+            AgeBox.Text = Person.Age.ToString();
+            AddressBox.Text = Person.Address ?? "";
+            PhoneNumberBox.Text = Person.PhoneNumber ?? "";
+            EmailBox.Text = Person.Email ?? "";
+        }
+
         private void Register_OnClick(object sender, RoutedEventArgs e)
         {
+            using var db = new FridgeContext();
             if (PasswordBox.Password == PasswordRepeatBox.Password)
             {
-                using var db = new FridgeContext();
-                if (db.Person.Any(p => p.Username == UsernameBox.Text))
+                Person? person;
+                if (Person != null)
+                {
+                    person = db.Person.FirstOrDefault(p => p.Username == UsernameBox.Text && p.Id != Person.Id);
+                    if (person != null)
+                    {
+                        MessageBox.Show("Username already exists");
+                        return;
+                    }
+                    RegisterUser();
+                    return;
+                }
+                person = db.Person.FirstOrDefault(p => p.Username == UsernameBox.Text);
+                if (person != null)
                 {
                     MessageBox.Show("Username already exists");
                     return;
@@ -46,13 +64,19 @@ namespace WPF
 
         private void RegisterUser()
         {
-            var seed = GenerateSeed();
-            var passwordHash = HashPassword(PasswordBox.Password, seed);
-            if (UsernameBox.Text == "" || PasswordBox.Password == "" || FirstNameBox.Text == "" ||
+            if (FirstNameBox.Text == "" ||
                 LastNameBox.Text == "" || AgeBox.Text == "")
             {
                 MessageBox.Show("Please fill in all required fields");
                 return;
+            }
+            if (UsernameBox.Text == "" || PasswordBox.Password == "")
+            {
+                if (Person == null)
+                {
+                    MessageBox.Show("Please fill in all required fields");
+                    return;
+                }
             }
             int age;
             try
@@ -64,29 +88,50 @@ namespace WPF
                 MessageBox.Show("Age must be number!");
                 return;
             }
-            var person = new Person(0, UsernameBox.Text, passwordHash, seed, FirstNameBox.Text, LastNameBox.Text,
-                age, AddressBox.Text, PhoneNumberBox.Text, EmailBox.Text);
-            using var db = new FridgeContext();
-            db.Person.Add(person);
-            db.SaveChanges();
-            Close();
-        }
-
-        public static string HashPassword(string password, string salt)
-        {
-            var pbkdf2 = new Rfc2898DeriveBytes(password, Encoding.UTF8.GetBytes(salt), 100000, HashAlgorithmName.SHA256);
-            byte[] hash = pbkdf2.GetBytes(20);
-            return Convert.ToBase64String(hash);
-        }
-
-        private string GenerateSeed()
-        {
-            byte[] seed = new byte[16];
-            using (var rng = RandomNumberGenerator.Create())
+            if (age < 0)
             {
-                rng.GetBytes(seed);
+                MessageBox.Show("Age must be positive number!");
+                return;
             }
-            return Convert.ToBase64String(seed);
+
+            string seed;
+            string passwordHash;
+            if (PasswordBox.Password != "")
+            {
+                seed = FridgeContext.GenerateSeed();
+                passwordHash = FridgeContext.HashPassword(PasswordBox.Password, seed);
+            }
+            else
+            {
+                seed = Person?.Seed ?? "";
+                passwordHash = Person?.PasswordHash ?? "";
+            }
+            
+            using var db = new FridgeContext();
+            if (Person == null)
+            {
+                Person = new Person(0, UsernameBox.Text, passwordHash, seed, FirstNameBox.Text, LastNameBox.Text,
+                    age, AddressBox.Text, PhoneNumberBox.Text, EmailBox.Text);
+                db.Person.Add(Person);
+            }
+            else
+            {
+                Person.Username = UsernameBox.Text;
+                Person.PasswordHash = passwordHash;
+                Person.Seed = seed;
+                Person.FirstName = FirstNameBox.Text;
+                Person.LastName = LastNameBox.Text;
+                Person.Age = age;
+                Person.Address = AddressBox.Text;
+                Person.PhoneNumber = PhoneNumberBox.Text;
+                Person.Email = EmailBox.Text;
+                Person.FirstName = FirstNameBox.Text;
+                Person.LastName = LastNameBox.Text;
+                db.Person.Update(Person);
+            }
+            db.SaveChanges();
+            UserAdded?.Invoke();
+            Close();
         }
     }
 }

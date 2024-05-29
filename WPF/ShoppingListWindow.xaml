@@ -20,9 +20,49 @@
         <Menu>
             <MenuItem Header="Add" Click="AddItem_OnClick"/>
             <MenuItem Header="Modify" Click="ModifyItem_OnClick" x:Name="Modify"/>
-            <MenuItem Header="Delete" Click="DeleteItem_OnClick"/>
+            <MenuItem Header="Delete" Click="DeleteItem_OnClick" x:Name="Delete"/>
         </Menu>
-        <ListView x:Name="ShoppingListView" SelectionChanged="ShoppingListView_OnSelectionChanged" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+        <ItemsControl Grid.Row="1" Name="ShoppingListView">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Expander Header="{Binding Name}">
+                        <ListView ItemsSource="{Binding ItemsList}" SelectionMode="Extended" SelectionChanged="ShoppingListView_OnSelectionChanged" MouseDoubleClick="ModifyItem_OnClick">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Name}">
+                                        <GridViewColumn.Header>
+                                            <GridViewColumnHeader Content="Name" Tag="Name"/>
+                                        </GridViewColumn.Header>
+                                    </GridViewColumn>
+                                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Quantity}">
+                                        <GridViewColumn.Header>
+                                            <GridViewColumnHeader Content="Quantity" Tag="Quantity"/>
+                                        </GridViewColumn.Header>
+                                    </GridViewColumn>
+                                    <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding ExpiryDate, StringFormat=d}">
+                                        <GridViewColumn.Header>
+                                            <GridViewColumnHeader Content="Expiration" Tag="ExpiryDate"/>
+                                        </GridViewColumn.Header>
+                                    </GridViewColumn>
+                                    <GridViewColumn>
+                                        <GridViewColumn.Header>
+                                            <GridViewColumnHeader Content="Bought?"/>
+                                        </GridViewColumn.Header>
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox Click="Bought_OnClick"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </Expander>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!--<ListView x:Name="ShoppingListView" SelectionChanged="ShoppingListView_OnSelectionChanged" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="Auto" DisplayMemberBinding="{Binding Name}">
@@ -42,6 +82,6 @@
                     </GridViewColumn>
                 </GridView>
             </ListView.View>
-        </ListView>
+        </ListView>-->
     </Grid>
 </Window>

@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Windows;
 using FridgeInventory;
 
 namespace WPF
@@ -20,6 +8,8 @@ namespace WPF
     /// </summary>
     public partial class ProfileWindow : Window
     {
+        public delegate void ProfileDeletedEventHandler(object sender, EventArgs e);
+        public event ProfileDeletedEventHandler? ProfileDeleted;
         public Person? Person { get; set; }
         public ProfileWindow(int ownerId)
         {
@@ -47,5 +37,24 @@ namespace WPF
             db.SaveChanges();
             Close();
         }
+
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show("Are you sure you want to delete your profile?", "Delete profile", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.No) return;
+            using var db = new FridgeContext();
+            var person = db.Person.Find(Person?.Id);
+            if (person == null) return;
+            var passwordWindow = new InputPasswordWindow(person.Id);
+            passwordWindow.ProfileDeleted += Close;
+            passwordWindow.Show();
+            Close();
+        }
+
+        private void Close(object sender, EventArgs e)
+        {
+            ProfileDeleted?.Invoke(this, EventArgs.Empty);
+            Close();
+        }   
     }
 }
