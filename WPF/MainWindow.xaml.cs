@@ -8,7 +8,6 @@ namespace WPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        private SettingsWindow? SettingsWindow { get; set; }
         private ShoppingListWindow? ShoppingListWindow { get; set; }
         private RegisterWindow? RegisterWindow { get; set; }
         private FridgeWindow? FridgeWindow { get; set; }
@@ -20,7 +19,6 @@ namespace WPF
 
         private void MainWindow_Closed(object? sender, EventArgs e)
         {
-            SettingsWindow?.Close();
             ShoppingListWindow?.Close();
         }
 

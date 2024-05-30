@@ -28,10 +28,5 @@ namespace FridgeInventory
         public string PasswordHash { get; set; } = passwordHash;
         public string Seed { get; set; } = seed;
         public bool? Admin { get; set; } = admin;
-
-        public override string ToString()
-        {
-            return $"FirstName: {FirstName}, LastName: {LastName} Age: {Age}, Address: {Address}, Phone Number: {PhoneNumber}, Email: {Email}";
-        }
     }
 }

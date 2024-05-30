@@ -57,11 +57,6 @@ namespace WPF
             //    FridgesControl.ItemsSource = Fridges;
             //}
         }
-        private void Settings_OnClick(object sender, RoutedEventArgs e)
-        {
-            var settings = new SettingsWindow();
-            settings.Show();
-        }
 
         private void AddItem_OnClick(object sender, RoutedEventArgs e)
         {

@@ -36,7 +36,7 @@ namespace AdminWPF
         private void RefreshUsers()
         {
             using var db = new FridgeContext();
-            UsersList = db.Person.Where(i => i.Admin != true).ToList();
+            UsersList = [.. db.Person.Where(i => i.Admin != true)];
             UsersView.ItemsSource = UsersList;
         }
 
@@ -54,7 +54,10 @@ namespace AdminWPF
             var person = db.Person.Find(selectedPerson.Id);
             if (person != null)
             {
-                RegisterWindow = new RegisterWindow(person.Id);
+                RegisterWindow = new RegisterWindow(person.Id)
+                {
+                    Title = "Modify user"
+                };
                 RegisterWindow.UserAdded += RefreshUsers;
                 RegisterWindow.Show();
             }

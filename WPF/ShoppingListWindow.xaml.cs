@@ -29,7 +29,6 @@ namespace WPF
         {
             OwnerId = ownerId;
             RefreshShoppingListView();
-
         }
 
         private void ShoppingListWindow_Closed(object? sender, EventArgs e)
@@ -76,7 +75,7 @@ namespace WPF
                 return;
             }
             var item = SelectedItems.First();
-            AddItemWindow = new(item)
+            AddItemWindow = new AddItemToFridgeWindow(item)
             {
                 Title = "Modify Item",
                 AddButton =

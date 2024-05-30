@@ -10,9 +10,10 @@ namespace FridgeInventory
         public DbSet<FridgeItem> FridgeItem { get; set; }
         public DbSet<Person> Person { get; set; }
 
+        private const string DatabaseFile = @"..\..\..\..\FridgeInventory\FridgeDatabaseLocal.mdf";
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var dbPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\FridgeInventory\FridgeDatabaseLocal.mdf"));
+            var dbPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, DatabaseFile));
             optionsBuilder.UseSqlServer($@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename={dbPath};Integrated Security=True;Connect Timeout=30;Encrypt=True");
         }
 
@@ -100,7 +101,7 @@ namespace FridgeInventory
         }
         public static bool VerifyPassword(string enteredPassword, string storedSeed, string storedHash)
         {
-            var enteredHash = FridgeContext.HashPassword(enteredPassword, storedSeed);
+            var enteredHash = HashPassword(enteredPassword, storedSeed);
             return enteredHash == storedHash;
         }
     }
